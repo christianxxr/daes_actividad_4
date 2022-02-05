@@ -2,7 +2,6 @@ package es.fp.cajero.model.Controller;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 import javax.servlet.http.HttpSession;
 
@@ -48,14 +47,14 @@ public class GestionCuentas {
 	@PostMapping("/ingresar")
 	public String ingresar(Cuenta cuenta, Movimiento movimiento, @RequestParam("saldo") double saldo,
 			HttpSession session, RedirectAttributes rattr) {
+		Cuenta aux = (Cuenta) session.getAttribute("usuario");
 		movimiento.setOperacion("Ingreso");
-		LocalDate fecha = LocalDate.now();
-		movimiento.setFecha(Date.valueOf(fecha));
+
+		movimiento.setFecha(new java.util.Date());
 		movimiento.setCantidad(cuenta.getSaldo());
-		int reg = crepo.aumentarSaldo(saldo, cuenta.getIdCuenta());
-		Cuenta aux = new Cuenta();
-		aux.setIdCuenta(cuenta.getIdCuenta());
-		movimiento.setCuenta(aux);
+		int reg = crepo.aumentarSaldo(saldo, aux.getIdCuenta());
+		cuenta.setIdCuenta(aux.getIdCuenta());
+		movimiento.setCuenta(cuenta);
 		if (reg == 1) {
 			imov.insertOne(movimiento);
 			rattr.addFlashAttribute("mensaje", "saldo actualizado");
@@ -67,8 +66,11 @@ public class GestionCuentas {
 	}
 
 	@GetMapping("/verMovimientos")
-	public String ver(Model model) {
-		model.addAttribute("listaCuentas", icuen.findAll());
+	public String ver(Model model, Cuenta cuenta, HttpSession session) {
+
+		Cuenta aux = (Cuenta) session.getAttribute("usuario");
+
+		model.addAttribute("listaCuentas", icuen.findById(aux.getIdCuenta()));
 		model.addAttribute("listaMovimientos", imov.findAll());
 		return "movimientos";
 	}
@@ -81,15 +83,15 @@ public class GestionCuentas {
 	@PostMapping("/extraer")
 	public String extraer(Cuenta cuenta, Movimiento movimiento, @RequestParam("saldo") double saldo,
 			HttpSession session, RedirectAttributes rattr) {
+		Cuenta aux = (Cuenta) session.getAttribute("usuario");
 		movimiento.setOperacion("Extracción");
-		LocalDate fecha = LocalDate.now();
-		movimiento.setFecha(Date.valueOf(fecha));
+		movimiento.setFecha(new java.util.Date());
 		movimiento.setCantidad(cuenta.getSaldo());
-		Cuenta aux = new Cuenta();
-		aux.setIdCuenta(cuenta.getIdCuenta());
-		movimiento.setCuenta(aux);
-		if (!(movimiento.getCantidad() >= movimiento.getCuenta().getSaldo())) {
-			int reg = crepo.disminuirSaldo(saldo, cuenta.getIdCuenta());
+		cuenta.setIdCuenta(aux.getIdCuenta());
+		movimiento.setCuenta(cuenta);
+
+		if ((movimiento.getCantidad() >= movimiento.getCuenta().getSaldo())) {
+			int reg = crepo.disminuirSaldo(saldo, aux.getIdCuenta());
 			if (reg == 1) {
 				imov.insertOne(movimiento);
 			}
@@ -112,24 +114,28 @@ public class GestionCuentas {
 		webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, false));
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	@PostMapping("/transferencia")
 	public String transferencia(Cuenta cuenta, Movimiento movimiento, RedirectAttributes rattr, HttpSession session) {
 
-		if (!session.getId().equals(cuenta.getIdCuenta())) {
-			movimiento.setOperacion("Abono por transferencia");
-			LocalDate fecha = LocalDate.now();
-			movimiento.setFecha(Date.valueOf(fecha));
+		movimiento.setOperacion("Abono por transferencia");
+		movimiento.setFecha(new java.util.Date());
+
+		Movimiento aux = new Movimiento();
+		aux.setCantidad(movimiento.getCantidad());
+		aux.setCuenta((Cuenta) session.getAttribute("usuario"));
+		aux.setFecha(new java.util.Date());
+		aux.setOperacion("Cargo por transferencia");
+
+		if (!(movimiento.getCantidad() >= aux.getCuenta().getSaldo())) {
 			int reg = imov.insertOne(movimiento);
-			if (!(movimiento.getCantidad() >= movimiento.getCuenta().getSaldo())) {
-				if (reg == 1) {
-					crepo.aumentarSaldo(movimiento.getCantidad(), movimiento.getCuenta().getIdCuenta());
-					crepo.disminuirSaldo(movimiento.getCantidad(), cuenta.getIdCuenta());
-				}
-				rattr.addFlashAttribute("mensaje", "transferencia realizada");
-			} else
-				rattr.addFlashAttribute("mensaje", "transferencia no realizada. No hay suficiente dinero");
-		}
+			reg = imov.insertOne(aux);
+			if (reg == 1) {
+				crepo.aumentarSaldo(movimiento.getCantidad(), movimiento.getCuenta().getIdCuenta());
+				crepo.disminuirSaldo(movimiento.getCantidad(), cuenta.getIdCuenta());
+			}
+			rattr.addFlashAttribute("mensaje", "transferencia realizada");
+		} else
+			rattr.addFlashAttribute("mensaje", "transferencia no realizada. No hay suficiente dinero");
 		return "redirect:/cuentas/opciones";
 
 	}
