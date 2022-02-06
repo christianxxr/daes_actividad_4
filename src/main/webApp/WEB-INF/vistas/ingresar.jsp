@@ -12,7 +12,6 @@
 			Introduce la cantidad: <input type="number" name="saldo">
 		</p>
 		<input type="submit" value="Enviar">
-		<input type="hidden" value="${usuario.idCuenta }" name="idCuenta">
 	</form>
 </body>
 </html>

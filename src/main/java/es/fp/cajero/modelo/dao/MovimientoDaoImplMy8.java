@@ -7,12 +7,13 @@ import org.springframework.stereotype.Service;
 
 import es.fp.cajero.modelo.beans.Movimiento;
 import es.fp.cajero.modelo.repository.IntMovimientosRepository;
+
 @Service
-public class MovimientoDaoImplMy8 implements IntMovimientoDao{
+public class MovimientoDaoImplMy8 implements IntMovimientoDao {
 
 	@Autowired
 	IntMovimientosRepository mrepo;
-	
+
 	@Override
 	public Movimiento findById(int idMovimiento) {
 		// TODO Auto-generated method stub
@@ -37,18 +38,6 @@ public class MovimientoDaoImplMy8 implements IntMovimientoDao{
 			e.printStackTrace();
 		}
 		return filas;
-	}
-
-	@Override
-	public int deleteOne(int idMovimiento) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public List<Movimiento> findByCuenta(int idCuenta) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

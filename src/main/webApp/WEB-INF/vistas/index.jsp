@@ -11,7 +11,7 @@
 
 	<form action="/inicio" method="post">
 		<p>
-			Número de cuenta: <input type="number" name="idCuenta">
+			Introduzca su número de cuenta: <input type="number" name="idCuenta">
 		</p>
 		<input type="submit" value="Entrar">
 		<h3>Mensajes: ${mensaje }</h3>

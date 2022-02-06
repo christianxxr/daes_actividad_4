@@ -10,6 +10,10 @@ import es.fp.cajero.modelo.beans.Cuenta;
 
 public interface IntCuentaRepository extends JpaRepository<Cuenta, Integer> {
 
+	/*
+	 * Métodos realizados para aumentar o bien disminuir, el saldo de la cuenta
+	 * indicada
+	 */
 	@Transactional
 	@Modifying
 	@Query("update Cuenta c set c.saldo = c.saldo + ?1 where c.idCuenta = ?2")

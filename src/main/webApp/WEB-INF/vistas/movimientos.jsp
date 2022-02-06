@@ -10,7 +10,7 @@
 </head>
 <body>
 
-	<h1>Número de cuenta: ${usuario.idCuenta }</h1>
+	<h1>Número de cuenta: ${listaCuentas.idCuenta }</h1>
 	<h2>Saldo: ${listaCuentas.saldo}</h2>
 
 	<table border="1">

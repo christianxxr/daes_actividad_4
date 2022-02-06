@@ -17,10 +17,18 @@ public class HomeController {
 	@Autowired
 	IntCuentaDao icuen;
 
+	/*
+	 * Método que nos muestra el jsp con el index
+	 */
 	@GetMapping("/inicio")
 	public String inicio() {
 		return "index";
 	}
+
+	/*
+	 * Método que nos permite entrar a la siguiente "pantalla" si la cuenta existe.
+	 * En caso de que exista, nos guardamos el atributo de sesión
+	 */
 
 	@PostMapping("/inicio")
 	public String inicio(Model model, HttpSession session, Cuenta cuenta) {

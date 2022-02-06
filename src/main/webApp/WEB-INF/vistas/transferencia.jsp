@@ -11,6 +11,8 @@
 
 	<h1>Transferencias</h1>
 
+	<p>Numero de cuenta: ${usuario.idCuenta }</p>
+
 	<form action="/cuentas/transferencia" method="post">
 
 		<p>
@@ -25,7 +27,6 @@
 				</c:forEach>
 			</select>
 		</p>
-		<input type="hidden" value="${usuario.idCuenta }" name="idCuenta">
 		<input type="submit" value="Transferir">
 	</form>
 

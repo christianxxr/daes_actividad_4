@@ -34,16 +34,25 @@ public class GestionCuentas {
 	@Autowired
 	IntCuentaRepository crepo;
 
+	/*
+	 * Método que muestra la pantalla inicial una vez hemos entrado con la cuenta
+	 */
 	@GetMapping("/opciones")
 	public String opciones() {
 		return "inicioCuentas";
 	}
 
+	/*
+	 * Método que nos muestra el jsp para ingresar dinero
+	 */
 	@GetMapping("/ingresar")
 	public String ingresar() {
 		return "ingresar";
 	}
 
+	/*
+	 * Método utilizado para mandar por post el ingreso que se ha realizado
+	 */
 	@PostMapping("/ingresar")
 	public String ingresar(Cuenta cuenta, Movimiento movimiento, @RequestParam("saldo") double saldo,
 			HttpSession session, RedirectAttributes rattr) {
@@ -65,6 +74,10 @@ public class GestionCuentas {
 
 	}
 
+	/*
+	 * Método para que nos muestra el jsp de los movimientos
+	 */
+
 	@GetMapping("/verMovimientos")
 	public String ver(Model model, Cuenta cuenta, HttpSession session) {
 
@@ -75,10 +88,17 @@ public class GestionCuentas {
 		return "movimientos";
 	}
 
+	/*
+	 * Método que nos muestra el jsp para extraer dinero
+	 */
 	@GetMapping("/extraer")
 	public String extraer() {
 		return "extraer";
 	}
+
+	/*
+	 * Método utilizado para mandar por post la extracción que se ha realizado
+	 */
 
 	@PostMapping("/extraer")
 	public String extraer(Cuenta cuenta, Movimiento movimiento, @RequestParam("saldo") double saldo,
@@ -102,8 +122,12 @@ public class GestionCuentas {
 
 	}
 
+	/*
+	 * Método que nos muestra el jsp para poder hacer un transferencia
+	 */
+
 	@GetMapping("/transferencia")
-	public String transferencia(Model model) {
+	public String transferencia(Model model, HttpSession session) {
 		model.addAttribute("listaCuentas", icuen.findAll());
 		return "transferencia";
 	}
@@ -114,8 +138,13 @@ public class GestionCuentas {
 		webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, false));
 	}
 
+	/*
+	 * Método utilizado para realizar una transferencia, nos realiza la operación en
+	 * ambas cuentas
+	 */
+
 	@PostMapping("/transferencia")
-	public String transferencia(Cuenta cuenta, Movimiento movimiento, RedirectAttributes rattr, HttpSession session) {
+	public String transferencia(Cuenta cuenta, Movimiento movimiento, RedirectAttributes rattr, HttpSession session,Model model) {
 
 		movimiento.setOperacion("Abono por transferencia");
 		movimiento.setFecha(new java.util.Date());
@@ -140,6 +169,10 @@ public class GestionCuentas {
 
 	}
 
+	/*
+	 * Método para cerrar la sesión y volver al index, donde podremos cambiar de
+	 * cuenta
+	 */
 	@GetMapping("/cerrarSesion")
 	public String cerrarSesion(HttpSession session) {
 		session.removeAttribute("usuario");

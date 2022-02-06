@@ -9,7 +9,6 @@ public interface IntMovimientoDao {
 	Movimiento findById(int idMovimiento);
 	List<Movimiento> findAll();
 	int insertOne(Movimiento movimiento);
-	int deleteOne(int idMovimiento);
-	List<Movimiento> findByCuenta(int idCuenta);
+
 	
 }
